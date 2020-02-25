@@ -36,7 +36,7 @@ function draw(params={}){
 	
 	// 2 - draw background
 	ctx.save();
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "rgba(29,20,73,1.0)";
     ctx.globalAlpha = 1.0;
     ctx.fillRect(0,0,canvasWidth,canvasHeight);
     ctx.restore();
@@ -49,35 +49,44 @@ function draw(params={}){
         ctx.fillRect(0,0,canvasWidth,canvasHeight);
         ctx.restore();
     }
-	// 4 - draw bars
-	if(params.showBars){
-        let barSpacing = 4;
+	// 4 - draw mountains
+	if(params.showMountains){
+        let nodeSpacing = canvasWidth/audioData.length;
         let margin = 5;
-        let screenWidthForBars = canvasWidth - (audioData.length * barSpacing) - margin * 2;
-        let barWidth = screenWidthForBars / audioData.length;
-        let barHeight = 200;
-        let topSpacing = 100;
+        // let screenWidthForBars = canvasWidth - (audioData.length * nodeSpacing) - margin * 2;
+        // let barWidth = screenWidthForBars / audioData.length;
+        let mountainMaxHeight = 100;
+        let horizonLine = 250;
         
         ctx.save();
         ctx.fillStyle = 'rgba(255,255,255,0.50)';
-        ctx.strokeStyle = 'rgba(0,0,0,0.50)';
+        ctx.strokeStyle = 'rgba(34,138,255,0.50)';
         // loop through the data and draw!
+        ctx.moveTo(0,horizonLine + (-1 * mountainMaxHeight * audioData[0]/255));
         for(let i = 0; i < audioData.length; i++) {
-            ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);
-            ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);
+            ctx.lineTo(margin + i * nodeSpacing, horizonLine + (-1 * mountainMaxHeight * audioData[i]/255));
+            /*ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);
+            ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);*/
         }
+        ctx.lineTo(canvasWidth,horizonLine);
+        ctx.lineTo(canvasWidth,canvasHeight);
+        ctx.lineTo(0,canvasHeight);
+        ctx.stroke();
         ctx.restore();
     }
 	// 5 - draw circles
     if(params.showCircles){
-        let maxRadius = canvasHeight/4;
+        let maxRadius = canvasHeight/6;
         ctx.save();
         ctx.globalAlpha = 0.5;
+        let maxPercent = 0.0;
         for(let i = 0; i < audioData.length; i++) {
             // red-ish circles
-            let percent = audioData[i] / 255;
-            
-            let circleRadius = percent * maxRadius;
+            let percent = 0.5 + (0.5 * audioData[i] / 255);
+            if(percent > maxPercent) {
+                maxPercent = percent;
+            }
+            /*let circleRadius = percent * maxRadius;
             ctx.beginPath();
             // ctx.fillStyle = utils.makeColor(255, 111, 111, .34 - percent/3.0);
             ctx.fillStyle = utils.makeColor(4, 38, 85, .34 - percent/3.0);
@@ -91,9 +100,9 @@ function draw(params={}){
             ctx.fillStyle = utils.makeColor(10, 137, 176, 0.10 - percent/10.0);
             ctx.arc(canvasWidth/2, canvasHeight/2, circleRadius * 1.5, 0, 2 * Math.PI, false);
             ctx.fill();
-            ctx.closePath();
+            ctx.closePath();*/
             
-            // yellow-ish circles, smaller
+            /*// yellow-ish circles, smaller
             ctx.save();
             ctx.beginPath();
             // ctx.fillStyle = utils.makeColor(200, 200, 0, 0.5 - percent/5.0);
@@ -101,8 +110,18 @@ function draw(params={}){
             ctx.arc(canvasWidth/2, canvasHeight/2, circleRadius * 0.50, 0, 2 * Math.PI, false);
             ctx.fill();
             ctx.closePath();
-            ctx.restore();
+            ctx.restore();*/
         }
+        // Draw the sun
+        ctx.save();
+        ctx.fillStyle = "rgba(244,209,107,1.0)";
+        ctx.strokeStyle = "rgba(244,209,107,1.0)";
+        ctx.beginPath();
+        ctx.arc(canvasWidth/2, canvasHeight/3, maxPercent * maxRadius, 0, 2 * Math.PI, false);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+
         ctx.restore();
     }
     // 6 - bitmap manipulation

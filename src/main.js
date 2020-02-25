@@ -17,8 +17,8 @@ const DEFAULTS = Object.freeze({
 });
 
 const drawParams = {
-    showGradient    : true,
-    showBars        : true,
+    showGradient    : false,
+    showMountains   : true,
     showCircles     : true,
     showNoise       : false,
     showInvert      : false,
@@ -97,8 +97,8 @@ function setupUI(canvasElement){
     }
     
     // Hook up show bars
-    barsCB.onclick = e => {
-        drawParams.showBars = e.target.checked;
+    mountainsCB.onclick = e => {
+        drawParams.showMountains = e.target.checked;
     }
     
     // Hook up show circles
