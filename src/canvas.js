@@ -167,7 +167,7 @@ function draw(params={}){
         let nodeCount = 30;
         let topNodeSpacing = canvasWidth/nodeCount;
         let bottomNodeSpacing = topNodeSpacing * 3;
-        let horizontalLineCount = 20;
+        let horizontalLineCount = 10;
         let horizontalLineSpacing = (canvasHeight - horizonLine) / horizontalLineCount;
         ctx.save();
         ctx.strokeStyle = "rgba(255,105,180,1.0)";
@@ -190,13 +190,12 @@ function draw(params={}){
         // Scrolling orizontal lines
         for(let i = 0; i < horizontalLineCount; i++) {
             ctx.beginPath();
-            ctx.moveTo(0, horizonLine + (i + groundFrameCount/120) * Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), 3) * (canvasHeight - horizonLine));
-            ctx.lineTo(canvasWidth, horizonLine + (i + groundFrameCount/120) * Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), 3) * (canvasHeight - horizonLine));
+            ctx.moveTo(0, horizonLine + Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), 2) * (canvasHeight - horizonLine));
+            ctx.lineTo(canvasWidth, horizonLine + Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), 2) * (canvasHeight - horizonLine));
             ctx.closePath();
             ctx.stroke();
         }
         groundFrameCount = (groundFrameCount + 1) % 120;
-        console.log(groundFrameCount);
         ctx.restore();
     }
 

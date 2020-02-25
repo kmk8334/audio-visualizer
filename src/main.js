@@ -17,7 +17,7 @@ const DEFAULTS = Object.freeze({
 });
 
 const drawParams = {
-    showGradient    : false,
+    // showGradient    : false,
     showMountains   : true,
     showSun         : true,
     showGround      : true,
@@ -93,9 +93,9 @@ function setupUI(canvasElement){
     volumeSlider.dispatchEvent(new Event("input"));
 
     // Hook up gradient checkbox
-    gradientCB.onclick = e => {
+    /*gradientCB.onclick = e => {
         drawParams.showGradient = e.target.checked;
-    }
+    }*/
     
     // Hook up show bars
     mountainsCB.onclick = e => {
