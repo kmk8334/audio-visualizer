@@ -10,7 +10,7 @@
 import * as utils from './utils.js';
 
 let ctx,canvasWidth,canvasHeight,gradient,analyserNode,audioData;
-
+let groundFrameCount = 0;
 
 function setupCanvas(canvasElement,analyserNodeRef){
 	// create drawing context
@@ -49,81 +49,157 @@ function draw(params={}){
         ctx.fillRect(0,0,canvasWidth,canvasHeight);
         ctx.restore();
     }
-	// 4 - draw mountains
-	if(params.showMountains){
-        let nodeSpacing = canvasWidth/audioData.length;
-        let margin = 5;
-        // let screenWidthForBars = canvasWidth - (audioData.length * nodeSpacing) - margin * 2;
-        // let barWidth = screenWidthForBars / audioData.length;
-        let mountainMaxHeight = 100;
-        let horizonLine = 250;
-        
+    // 5 - draw sun
+    if(params.showSun){
+        let maxRadius = canvasHeight/4;
+        let minRadiusPercent = 0.5;
         ctx.save();
-        ctx.fillStyle = 'rgba(255,255,255,0.50)';
-        ctx.strokeStyle = 'rgba(34,138,255,0.50)';
-        // loop through the data and draw!
-        ctx.moveTo(0,horizonLine + (-1 * mountainMaxHeight * audioData[0]/255));
+        ctx.globalAlpha = 0.6;
+        // Determine the maximum volume percentage from all samples
+        let maxPercent = 0.5;
         for(let i = 0; i < audioData.length; i++) {
-            ctx.lineTo(margin + i * nodeSpacing, horizonLine + (-1 * mountainMaxHeight * audioData[i]/255));
-            /*ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);
-            ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);*/
-        }
-        ctx.lineTo(canvasWidth,horizonLine);
-        ctx.lineTo(canvasWidth,canvasHeight);
-        ctx.lineTo(0,canvasHeight);
-        ctx.stroke();
-        ctx.restore();
-    }
-	// 5 - draw circles
-    if(params.showCircles){
-        let maxRadius = canvasHeight/6;
-        ctx.save();
-        ctx.globalAlpha = 0.5;
-        let maxPercent = 0.0;
-        for(let i = 0; i < audioData.length; i++) {
-            // red-ish circles
-            let percent = 0.5 + (0.5 * audioData[i] / 255);
+            let percent = minRadiusPercent + ((1-minRadiusPercent) * audioData[i] / 255);
             if(percent > maxPercent) {
                 maxPercent = percent;
             }
-            /*let circleRadius = percent * maxRadius;
-            ctx.beginPath();
-            // ctx.fillStyle = utils.makeColor(255, 111, 111, .34 - percent/3.0);
-            ctx.fillStyle = utils.makeColor(4, 38, 85, .34 - percent/3.0);
-            ctx.arc(canvasWidth/2, canvasHeight/2, circleRadius, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();
-            
-            // blue-ish circles, bigger, more transparent
-            ctx.beginPath();
-            // ctx.fillStyle = utils.makeColor(0, 0, 255, 0.10 - percent/10.0);
-            ctx.fillStyle = utils.makeColor(10, 137, 176, 0.10 - percent/10.0);
-            ctx.arc(canvasWidth/2, canvasHeight/2, circleRadius * 1.5, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();*/
-            
-            /*// yellow-ish circles, smaller
-            ctx.save();
-            ctx.beginPath();
-            // ctx.fillStyle = utils.makeColor(200, 200, 0, 0.5 - percent/5.0);
-            ctx.fillStyle = utils.makeColor(80, 189, 211, 0.5 - percent/5.0);
-            ctx.arc(canvasWidth/2, canvasHeight/2, circleRadius * 0.50, 0, 2 * Math.PI, false);
-            ctx.fill();
-            ctx.closePath();
-            ctx.restore();*/
         }
-        // Draw the sun
-        ctx.save();
-        ctx.fillStyle = "rgba(244,209,107,1.0)";
-        ctx.strokeStyle = "rgba(244,209,107,1.0)";
+        // Draw the purple background
+        let radialGradient = ctx.createRadialGradient(canvasWidth/2, canvasHeight/3, 0, canvasWidth/2, canvasHeight/3, maxRadius * maxPercent);
+        radialGradient.addColorStop(0.4,"rgba(187,136,204,0.5)");
+        radialGradient.addColorStop(1,"rgba(187,136,204,0.0)");
+        ctx.fillStyle = radialGradient;
         ctx.beginPath();
-        ctx.arc(canvasWidth/2, canvasHeight/3, maxPercent * maxRadius, 0, 2 * Math.PI, false);
+        ctx.arc(canvasWidth/2,canvasHeight/3, maxRadius * maxPercent, 0, 2 * Math.PI, false);
         ctx.closePath();
         ctx.fill();
-        ctx.restore();
 
+        // Draw the sun
+        let sunGradient = ctx.createLinearGradient(
+            canvasWidth/2, 
+            canvasHeight/3 - (maxRadius * 0.8 * maxPercent), 
+            canvasWidth/2, 
+            canvasHeight/3 + (maxRadius * 0.8 * maxPercent)
+            );
+        sunGradient.addColorStop(0.0, "rgba(255,242,0,1.0)");
+        sunGradient.addColorStop(1.0, "rgba(253,106,2,1.0)");
+        /* Rainbow :)
+        sunGradient.addColorStop(0.0, "red");
+        sunGradient.addColorStop(0.2, "orange");
+        sunGradient.addColorStop(0.4, "yellow");
+        sunGradient.addColorStop(0.6, "green");
+        sunGradient.addColorStop(0.8, "blue");
+        sunGradient.addColorStop(1.0, "purple");
+        */
+        ctx.fillStyle = sunGradient;
+        ctx.strokeStyle = "rgba(255,255,255,1.0)";
+        // Top of sun
+        ctx.beginPath();
+        ctx.arc(canvasWidth/2, canvasHeight/3, maxPercent * 0.75 * maxRadius, 0.05 * Math.PI, 0.95 * Math.PI, true);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Second-from-top semgent of sun
+        ctx.beginPath();
+        ctx.arc(canvasWidth/2, canvasHeight/3, maxPercent * 0.75 * maxRadius, 0.08 * Math.PI, 0.18 * Math.PI, false);
+        ctx.arc(canvasWidth/2, canvasHeight/3, maxPercent * 0.75 * maxRadius, 0.82 * Math.PI, 0.92 * Math.PI, false);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        // Third-from-top semgent of sun
+        ctx.beginPath();
+        ctx.arc(canvasWidth/2, canvasHeight/3, maxPercent * 0.75 * maxRadius, 0.23 * Math.PI, 0.30 * Math.PI, false);
+        ctx.arc(canvasWidth/2, canvasHeight/3, maxPercent * 0.75 * maxRadius, 0.70 * Math.PI, 0.77 * Math.PI, false);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+       // Bottom semgent of sun
+       ctx.beginPath();
+       ctx.arc(canvasWidth/2, canvasHeight/3, maxPercent * 0.75 * maxRadius, 0.38 * Math.PI, 0.62 * Math.PI, false);
+       ctx.closePath();
+       ctx.fill();
+       ctx.stroke();
         ctx.restore();
     }
+	// 4 - draw mountains
+	if(params.showMountains){
+        // Draw 2 mountains, so nodeSpacing is halved
+        let nodeSpacing = (canvasWidth/2)/audioData.length;
+        let margin = (canvasWidth - nodeSpacing*(2*audioData.length-1))/2;
+        // let screenWidthForBars = canvasWidth - (audioData.length * nodeSpacing) - margin * 2;
+        // let barWidth = screenWidthForBars / audioData.length;
+        let mountainMaxHeight = canvasHeight * 2/8;
+        let horizonLine = canvasHeight * 5/8;
+        
+        ctx.save();
+        ctx.fillStyle = "rgba(29,20,73,1.0)";
+        ctx.strokeStyle = 'rgba(34,138,255,0.50)';
+        // Draw the left mountain
+        ctx.beginPath();
+        ctx.moveTo(0,horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-1]/255));
+        for(let i = 0; i < audioData.length; i++) {
+            ctx.lineTo(margin + i * nodeSpacing, horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-i-1]/255));
+            ctx.lineTo(margin + i * nodeSpacing, horizonLine);
+            ctx.lineTo(margin + i * nodeSpacing, horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-i-1]/255));
+            /*ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);
+            ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);*/
+        }
+        // Draw the right mountain
+        for(let i = audioData.length - 1; i >= 0; i--) {
+            ctx.lineTo(canvasWidth - (margin + i * nodeSpacing), horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-i-1]/255));
+            ctx.lineTo(canvasWidth - (margin + i * nodeSpacing), horizonLine);
+            ctx.lineTo(canvasWidth - (margin + i * nodeSpacing), horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-i-1]/255));
+            /*ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);
+            ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);*/
+        }
+        
+        ctx.lineTo(canvasWidth, horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-1]/255));
+        ctx.lineTo(canvasWidth, horizonLine);
+        ctx.lineTo(0, horizonLine);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+    }
+    // Draw ground
+    if(params.showGround) {
+        // TODO: Get rid of magic numbers for canvasWidth, canvasHeight, horizonLine
+        let horizonLine = canvasHeight * 5/8;
+        let nodeCount = 30;
+        let topNodeSpacing = canvasWidth/nodeCount;
+        let bottomNodeSpacing = topNodeSpacing * 3;
+        let horizontalLineCount = 20;
+        let horizontalLineSpacing = (canvasHeight - horizonLine) / horizontalLineCount;
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,105,180,1.0)";
+        ctx.lineWidth = 2;
+        // Vertical lines
+        // Lines starting at the edge of the screen are ignored since it'd be drawing a line off-screen
+        for(let i = 1; i < nodeCount; i++) {
+            ctx.beginPath();
+            ctx.moveTo(topNodeSpacing * i, horizonLine);
+            ctx.lineTo(canvasWidth/2 + bottomNodeSpacing * (i - nodeCount/2), canvasHeight);
+            ctx.closePath();
+            ctx.stroke();
+        }
+        // Horizon line
+        ctx.beginPath();
+        ctx.moveTo(0, horizonLine);
+        ctx.lineTo(canvasWidth, horizonLine);
+        ctx.closePath();
+        ctx.stroke();
+        // Scrolling orizontal lines
+        for(let i = 0; i < horizontalLineCount; i++) {
+            ctx.beginPath();
+            ctx.moveTo(0, horizonLine + (i + groundFrameCount/120) * Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), 3) * (canvasHeight - horizonLine));
+            ctx.lineTo(canvasWidth, horizonLine + (i + groundFrameCount/120) * Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), 3) * (canvasHeight - horizonLine));
+            ctx.closePath();
+            ctx.stroke();
+        }
+        groundFrameCount = (groundFrameCount + 1) % 120;
+        console.log(groundFrameCount);
+        ctx.restore();
+    }
+
     // 6 - bitmap manipulation
 	// TODO: right now. we are looping though every pixel of the canvas (320,000 of them!), 
 	// regardless of whether or not we are applying a pixel effect
@@ -139,11 +215,11 @@ function draw(params={}){
     let width = imageData.width; // not using here
 	// B) Iterate through each pixel, stepping 4 elements at a time (which is the RGBA for 1 pixel)
     for(let i = 0; i < length; i += 4) {
-		// C) randomly change every 20th pixel to red
+		// C) randomly change every 20th pixel +/-64 in each RGB channel
         if(params.showNoise && Math.random() < 0.05){
-			data[i] = 128; // data[i] is the red channel
-			data[i+1] = 255; // data[i+1] is the green channel
-			data[i+2] = 255; // data[i+2] is the blue channel
+			data[i] = data[i] - 64 + Math.random() * 128; // data[i] is the red channel
+			data[i+1] = data[i+1] - 64 + Math.random() * 128; // data[i+1] is the green channel
+			data[i+2] = data[i+2] - 64 + Math.random() * 128; // data[i+2] is the blue channel
 			// data[i+3] is the alpha channel
 		} // end if
         

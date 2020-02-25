@@ -19,7 +19,8 @@ const DEFAULTS = Object.freeze({
 const drawParams = {
     showGradient    : false,
     showMountains   : true,
-    showCircles     : true,
+    showSun         : true,
+    showGround      : true,
     showNoise       : false,
     showInvert      : false,
     showEmboss      : false
@@ -101,9 +102,14 @@ function setupUI(canvasElement){
         drawParams.showMountains = e.target.checked;
     }
     
-    // Hook up show circles
-    circlesCB.onclick = e => {
-        drawParams.showCircles = e.target.checked;
+    // Hook up sun checkbox
+    sunCB.onclick = e => {
+        drawParams.showSun = e.target.checked;
+    }
+    
+    // Hook up ground checkbox
+    groundCB.onclick = e => {
+        drawParams.showGround = e.target.checked;
     }
     
     // Hook up noise checkbox
