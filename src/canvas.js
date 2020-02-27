@@ -11,6 +11,9 @@ import * as utils from './utils.js';
 
 let ctx,canvasWidth,canvasHeight,gradient,analyserNode,audioData;
 let groundFrameCount = 0;
+let sunScalar = 1.0;
+let mountainScalar = 1.0;
+let horizonScalar = 2.0;
 
 function setupCanvas(canvasElement,analyserNodeRef){
 	// create drawing context
@@ -51,7 +54,7 @@ function draw(params={}){
     }
     // 5 - draw sun
     if(params.showSun){
-        let maxRadius = canvasHeight/4;
+        let maxRadius = canvasHeight/6 * sunScalar;
         let minRadiusPercent = 0.5;
         ctx.save();
         ctx.globalAlpha = 0.6;
@@ -127,7 +130,7 @@ function draw(params={}){
         let margin = (canvasWidth - nodeSpacing*(2*audioData.length-1))/2;
         // let screenWidthForBars = canvasWidth - (audioData.length * nodeSpacing) - margin * 2;
         // let barWidth = screenWidthForBars / audioData.length;
-        let mountainMaxHeight = canvasHeight * 2/8;
+        let mountainMaxHeight = canvasHeight * 2/8 * mountainScalar;
         let horizonLine = canvasHeight * 5/8;
         
         ctx.save();
@@ -166,7 +169,7 @@ function draw(params={}){
         let horizonLine = canvasHeight * 5/8;
         let nodeCount = 30;
         let topNodeSpacing = canvasWidth/nodeCount;
-        let bottomNodeSpacing = topNodeSpacing * 3;
+        let bottomNodeSpacing = topNodeSpacing * horizonScalar;
         let horizontalLineCount = 10;
         let horizontalLineSpacing = (canvasHeight - horizonLine) / horizontalLineCount;
         ctx.save();
@@ -187,11 +190,11 @@ function draw(params={}){
         ctx.lineTo(canvasWidth, horizonLine);
         ctx.closePath();
         ctx.stroke();
-        // Scrolling orizontal lines
+        // Scrolling horizontal lines
         for(let i = 0; i < horizontalLineCount; i++) {
             ctx.beginPath();
-            ctx.moveTo(0, horizonLine + Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), 2) * (canvasHeight - horizonLine));
-            ctx.lineTo(canvasWidth, horizonLine + Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), 2) * (canvasHeight - horizonLine));
+            ctx.moveTo(0, horizonLine + Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), horizonScalar) * (canvasHeight - horizonLine));
+            ctx.lineTo(canvasWidth, horizonLine + Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), horizonScalar) * (canvasHeight - horizonLine));
             ctx.closePath();
             ctx.stroke();
         }
@@ -242,4 +245,9 @@ function draw(params={}){
     ctx.putImageData(imageData, 0, 0);
 }
 
-export {setupCanvas,draw};
+// Helper functions
+function setSunScalar(value){ sunScalar = value; }
+function setMountainScalar(value){ mountainScalar = value; }
+function setHorizonScalar(value){ horizonScalar = value; }
+
+export {setupCanvas,draw,setSunScalar,setMountainScalar,setHorizonScalar};
