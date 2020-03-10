@@ -13,7 +13,7 @@ import * as canvas from './canvas.js';
 
 // 1 - here we are faking an enumeration
 const DEFAULTS = Object.freeze({
-	sound1  :  "media/human-voice.mp3"
+	sound1  :  "media/unrequited-attention.mp3"
 });
 
 const drawParams = {
@@ -69,13 +69,36 @@ function setupUI(canvasElement){
     // C - hookup volume slider & label
     let volumeSlider = document.querySelector("#volumeSlider");
     let volumeLabel = document.querySelector("#volumeLabel");
-
     // add .oninput event to slider
     volumeSlider.oninput = e => {
         // set the gain
         audio.setVolume(e.target.value);
         // update value of label to match value of slider
         volumeLabel.innerHTML = Math.round((e.target.value/2 * 100));
+    };
+
+    // Hook up sun slider & label
+    let sunSlider = document.querySelector("#sunSlider");
+    let sunLabel = document.querySelector("#sunLabel");
+    sunSlider.oninput = e => {
+        canvas.setSunScalar(e.target.value);
+        sunLabel.innerHTML = e.target.value;
+    };
+
+    // Hook up mountain slider & label
+    let mountainSlider = document.querySelector("#mountainSlider");
+    let mountainLabel = document.querySelector("#mountainLabel");
+    mountainSlider.oninput = e => {
+        canvas.setMountainScalar(e.target.value);
+        mountainLabel.innerHTML = e.target.value;
+    };
+
+    // Hook up ground slider & label
+    let groundSlider = document.querySelector("#groundSlider");
+    let groundLabel = document.querySelector("#groundLabel");
+    groundSlider.oninput = e => {
+        canvas.setHorizonScalar(e.target.value);
+        groundLabel.innerHTML = e.target.value;
     };
 
     // D - hookup track <select>
@@ -100,16 +123,31 @@ function setupUI(canvasElement){
     // Hook up show bars
     mountainsCB.onclick = e => {
         drawParams.showMountains = e.target.checked;
+        if(e.target.checked == true) {
+            document.querySelector("#mountainSliderSection").style.display = "block";
+        } else {
+            document.querySelector("#mountainSliderSection").style.display = "none";
+        }
     }
     
     // Hook up sun checkbox
     sunCB.onclick = e => {
         drawParams.showSun = e.target.checked;
+        if(e.target.checked == true) {
+            document.querySelector("#sunSliderSection").style.display = "block";
+        } else {
+            document.querySelector("#sunSliderSection").style.display = "none";
+        }
     }
     
     // Hook up ground checkbox
     groundCB.onclick = e => {
         drawParams.showGround = e.target.checked;
+        if(e.target.checked == true) {
+            document.querySelector("#groundSliderSection").style.display = "block";
+        } else {
+            document.querySelector("#groundSliderSection").style.display = "none";
+        }
     }
     
     // Hook up noise checkbox
@@ -135,24 +173,3 @@ function loop(){
 }
 
 export {init};
-
-/* Chonker of code */
-// 11 - this time, let's visualize the audio data on the canvas
-
-/* YOU WRITE THIS! 
-ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-ctx.save();
-ctx.fillStyle="orange";
-ctx.translate(0,MIDDLE_Y);
-for(let byte of data) {
-    ctx.translate(BAR_WIDTH, 0);
-    let percent = byte/255;
-    percent = percent < 0.02 ? 0.02 : percent;
-    ctx.save();
-    ctx.scale(1,-1);
-    // ctx.fillRect(x, y, width, height);
-    ctx.fillRect(0, 0, BAR_WIDTH, MAX_BAR_HEIGHT*percent);
-    ctx.restore();
-    ctx.translate(PADDING, 0);
-} 
-ctx.restore(); */
