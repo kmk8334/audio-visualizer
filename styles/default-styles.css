@@ -24,6 +24,27 @@ canvas {
   margin-left: 1rem;
 }
 
+#controls p{
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+#controlSliders{
+  width: 50%;
+  float: left;
+}
+
+#controlCheckboxes{
+  width: 50%;
+  float: left;
+}
+
+#credits{
+  width: 100%;
+  clear: left;
+  margin-left: 1em;
+}
+
 #volumeLabel{
   margin-left: 1rem;
 }
