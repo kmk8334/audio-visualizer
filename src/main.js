@@ -1,17 +1,13 @@
 /*
-	main.js is primarily responsible for hooking up the UI to the rest of the application 
-	and setting up the main event loop
+Author: Kevin Kulp
+Purpose: Hooking up the UI to the rest of the application and setting up the main event loop
 */
-
-// We will write the functions in this file in the traditional ES5 way
-// In this instance, we feel the code is more readable if written this way
-// If you want to re-write these as ES6 arrow functions, to be consistent with the other files, go ahead!
 
 import * as utils from './utils.js';
 import * as audio from './audio.js';
 import * as canvas from './canvas.js';
 
-// 1 - here we are faking an enumeration
+// Default value for the audio file
 const DEFAULTS = Object.freeze({
 	sound1  :  "media/unrequited-attention.mp3"
 });
@@ -27,34 +23,29 @@ const drawParams = {
 };
 
 function init(){
-    console.log("init called");
-    console.log(`Testing utils.getRandomColor() import: ${utils.getRandomColor()}`);
+    // Load the default audio clip
     audio.setupWebaudio(DEFAULTS.sound1);
-	let canvasElement = document.querySelector("canvas"); // hookup <canvas> element
+    // Hoop up the canvas
+	let canvasElement = document.querySelector("canvas");
     setupUI(canvasElement);
     canvas.setupCanvas(canvasElement,audio.analyserNode);
     loop();
 }
 
 function setupUI(canvasElement){
-    // A - hookup fullscreen button
+    // Hook up fullscreen button
     const fsButton = document.querySelector("#fsButton");
-
-    // add .onclick event to button
     fsButton.onclick = e => {
-    console.log("init called");
     utils.goFullscreen(canvasElement);
     };
 
     // add .onclick event to button
     playButton.onclick = e => {
-        console.log(`audioCtx.state before = ${audio.audioCtx.state}`);
 
         // check if context is in suspended state (autoplay policy)
         if(audio.audioCtx.state == "suspended") {
             audio.audioCtx.resume();
         }
-        console.log(`audioCtx.state after = ${audio.audioCtx.state}`);
         if(e.target.dataset.playing == "no"){
             // if track is currently paused, play it
             audio.playCurrentSound();
@@ -66,10 +57,9 @@ function setupUI(canvasElement){
         }
     }
 
-    // C - hookup volume slider & label
-    let volumeSlider = document.querySelector("#volumeSlider");
+    // Hook up volume slider & label
+    const volumeSlider = document.querySelector("#volumeSlider");
     let volumeLabel = document.querySelector("#volumeLabel");
-    // add .oninput event to slider
     volumeSlider.oninput = e => {
         // set the gain
         audio.setVolume(e.target.value);
@@ -78,7 +68,7 @@ function setupUI(canvasElement){
     };
 
     // Hook up sun slider & label
-    let sunSlider = document.querySelector("#sunSlider");
+    const sunSlider = document.querySelector("#sunSlider");
     let sunLabel = document.querySelector("#sunLabel");
     sunSlider.oninput = e => {
         canvas.setSunScalar(e.target.value);
@@ -86,7 +76,7 @@ function setupUI(canvasElement){
     };
 
     // Hook up mountain slider & label
-    let mountainSlider = document.querySelector("#mountainSlider");
+    const mountainSlider = document.querySelector("#mountainSlider");
     let mountainLabel = document.querySelector("#mountainLabel");
     mountainSlider.oninput = e => {
         canvas.setMountainScalar(e.target.value);
@@ -101,7 +91,7 @@ function setupUI(canvasElement){
         groundLabel.innerHTML = e.target.value;
     };
 
-    // D - hookup track <select>
+    // Hook up track <select>
     let trackSelect = document.querySelector("#trackSelect");
     // add .onchange event to <select>
     trackSelect.onchange = e => {
@@ -114,11 +104,6 @@ function setupUI(canvasElement){
 
     // set value of label to match initial value of slider
     volumeSlider.dispatchEvent(new Event("input"));
-
-    // Hook up gradient checkbox
-    /*gradientCB.onclick = e => {
-        drawParams.showGradient = e.target.checked;
-    }*/
     
     // Hook up show bars
     mountainsCB.onclick = e => {
@@ -164,10 +149,26 @@ function setupUI(canvasElement){
     embossCB.onclick = e => {
         drawParams.showEmboss = e.target.checked;
     }
+
+    // Hook up highshelf filter
+    document.querySelector('#highshelfCB').checked = audio.soundParams.highshelf;
+    document.querySelector('#highshelfCB').onchange = e => {
+        audio.soundParams.highshelf = e.target.checked;
+        audio.updateHighshelf();
+    };
+    audio.updateHighshelf(); // Initialize the values based on the current state of the checkbox
+
+    // Hook up lowshelf filter
+    document.querySelector('#lowshelfCB').checked = audio.soundParams.lowshelf;
+    document.querySelector('#lowshelfCB').onchange = e => {
+        audio.soundParams.lowshelf = e.target.checked;
+        audio.updateLowshelf();
+    };
+    audio.updateLowshelf(); // Initialize the values based on the current state of the checkbox
+
 } // end setupUI
 
 function loop(){
-    /* NOTE: This is temporary testing code that we will delete in Part II */
     requestAnimationFrame(loop);
     canvas.draw(drawParams);
 }

@@ -1,8 +1,11 @@
+/*
+Author: Kevin Kulp
+Purpose: Initialize the canvas once the page is finished loading
+*/
+
 import * as main from "./main.js";
 window.onload = ()=>{
-	console.log("window.onload called");
-	// 1 - do preload here - load fonts, images, additional sounds, etc...
-	
-	// 2 - start up app
+	// Load any images, audio files, etc. if needed here
+
 	main.init();
 }

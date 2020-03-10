@@ -1,58 +1,60 @@
 /*
-	The purpose of this file is to take in the analyser node and a <canvas> element: 
-	  - the module will create a drawing context that points at the <canvas> 
-	  - it will store the reference to the analyser node
-	  - in draw(), it will loop through the data in the analyser node
-	  - and then draw something representative on the canvas
-	  - maybe a better name for this file/module would be *visualizer.js* ?
+Author: Kevin Kulp
+Purpose: Draw the canvas based on the provided audio values
 */
 
 import * as utils from './utils.js';
+import * as audio from './audio.js';
 
-let ctx,canvasWidth,canvasHeight,gradient,analyserNode,audioData;
+let ctx,canvasWidth,canvasHeight,analyserNode,audioData;
 let groundFrameCount = 0;
 let sunScalar = 1.0;
 let mountainScalar = 1.0;
 let horizonScalar = 2.0;
 
+// Store references to the canvas and audio analyser node
 function setupCanvas(canvasElement,analyserNodeRef){
-	// create drawing context
+	// Create drawing context
 	ctx = canvasElement.getContext("2d");
 	canvasWidth = canvasElement.width;
 	canvasHeight = canvasElement.height;
-	// create a gradient that runs top to bottom - I'll miss the rainbow gay :(
+	// Create a gradient that runs top to bottom - I'll miss the rainbow :(
 	// gradient = utils.getLinearGradient(ctx,0,0,0,canvasHeight,[{percent:0,color:"blue"},{percent:.25,color:"green"},{percent:.5,color:"yellow"},{percent:.75,color:"red"},{percent:1,color:"magenta"}]);
-	gradient = utils.getLinearGradient(ctx,0,0,0,canvasHeight,[{percent:0,color:"#243C4B"},{percent:.25,color:"#3C7A8D"},{percent:.5,color:"#6CB9B7"},{percent:.75,color:"#9BC2B8"},{percent:1,color:"#D8E3C8"}]);
-    
-	// keep a reference to the analyser node
+	
+	// Store a reference to the analyser node
 	analyserNode = analyserNodeRef;
-	// this is the array where the analyser data will be stored
+	// This is where the data will be stored for the audio visualizer points
 	audioData = new Uint8Array(analyserNode.fftSize/2);
 }
 
+// Draw the full canvas for the frame based off the current audio data
 function draw(params={}){
-  // 1 - populate the audioData array with the frequency data from the analyserNode
-	// notice these arrays are passed "by reference" 
-	analyserNode.getByteFrequencyData(audioData);
-	// OR
-	//analyserNode.getByteTimeDomainData(audioData); // waveform data
+    // Fill audioData with the frequency data from the analyserNode
+    analyserNode.getByteFrequencyData(audioData);
+    
+    // Apply visuals for lowshelf data
+    if(audio.soundParams.lowshelf) {
+        for(let i = 0; i * (44100 / audioData.length) < 1000; i++) {
+            // Increase the display bar by 25%, if it's not already capped at 255
+            audioData[i] = (audioData[i] * 1.25 > 255 ? 255 : audioData[i] * 1.25);
+        }
+    }
+    // Apply visuals for highshelf data
+    if(audio.soundParams.highshelf) {
+        for(let i = audioData.length - 1; i * (44100 / audioData.length) > 1000; i--) {
+            // Increase the display bar by 25%, if it's not already capped at 255
+            audioData[i] = (audioData[i] * 1.25 > 255 ? 255 : audioData[i] * 1.25);
+        }
+    }  
 	
-	// 2 - draw background
+	// Draw background
 	ctx.save();
     ctx.fillStyle = "rgba(29,20,73,1.0)";
     ctx.globalAlpha = 1.0;
     ctx.fillRect(0,0,canvasWidth,canvasHeight);
     ctx.restore();
-		
-	// 3 - draw gradient
-	if(params.showGradient){
-        ctx.save();
-        ctx.fillStyle = gradient;
-        ctx.globalAlpha = 1.0;
-        ctx.fillRect(0,0,canvasWidth,canvasHeight);
-        ctx.restore();
-    }
-    // 5 - draw sun
+
+    // Draw the sun
     if(params.showSun){
         let maxRadius = canvasHeight/6 * sunScalar;
         let minRadiusPercent = 0.5;
@@ -66,7 +68,7 @@ function draw(params={}){
                 maxPercent = percent;
             }
         }
-        // Draw the purple background
+        // Draw the purple background surrounding the sun (TODO: Store in a memo table based on the max percent)
         let radialGradient = ctx.createRadialGradient(canvasWidth/2, canvasHeight/3, 0, canvasWidth/2, canvasHeight/3, maxRadius * maxPercent);
         radialGradient.addColorStop(0.4,"rgba(187,136,204,0.5)");
         radialGradient.addColorStop(1,"rgba(187,136,204,0.0)");
@@ -76,7 +78,7 @@ function draw(params={}){
         ctx.closePath();
         ctx.fill();
 
-        // Draw the sun
+        // Create the yellow / orange gradient for the sun (TODO: Store in a memo table based on the max percent)
         let sunGradient = ctx.createLinearGradient(
             canvasWidth/2, 
             canvasHeight/3 - (maxRadius * 0.8 * maxPercent), 
@@ -95,6 +97,7 @@ function draw(params={}){
         */
         ctx.fillStyle = sunGradient;
         ctx.strokeStyle = "rgba(255,255,255,1.0)";
+        // Draw the sun
         // Top of sun
         ctx.beginPath();
         ctx.arc(canvasWidth/2, canvasHeight/3, maxPercent * 0.75 * maxRadius, 0.05 * Math.PI, 0.95 * Math.PI, true);
@@ -123,13 +126,11 @@ function draw(params={}){
        ctx.stroke();
         ctx.restore();
     }
-	// 4 - draw mountains
+	// Draw the mountains
 	if(params.showMountains){
         // Draw 2 mountains, so nodeSpacing is halved
         let nodeSpacing = (canvasWidth/2)/audioData.length;
-        let margin = (canvasWidth - nodeSpacing*(2*audioData.length-1))/2;
-        // let screenWidthForBars = canvasWidth - (audioData.length * nodeSpacing) - margin * 2;
-        // let barWidth = screenWidthForBars / audioData.length;
+        let margin = nodeSpacing/2;
         let mountainMaxHeight = canvasHeight * 2/8 * mountainScalar;
         let horizonLine = canvasHeight * 5/8;
         
@@ -143,16 +144,12 @@ function draw(params={}){
             ctx.lineTo(margin + i * nodeSpacing, horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-i-1]/255));
             ctx.lineTo(margin + i * nodeSpacing, horizonLine);
             ctx.lineTo(margin + i * nodeSpacing, horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-i-1]/255));
-            /*ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);
-            ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);*/
         }
         // Draw the right mountain
         for(let i = audioData.length - 1; i >= 0; i--) {
             ctx.lineTo(canvasWidth - (margin + i * nodeSpacing), horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-i-1]/255));
             ctx.lineTo(canvasWidth - (margin + i * nodeSpacing), horizonLine);
             ctx.lineTo(canvasWidth - (margin + i * nodeSpacing), horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-i-1]/255));
-            /*ctx.fillRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);
-            ctx.strokeRect(margin + i * (barWidth + barSpacing), topSpacing + 256-audioData[i], barWidth, barHeight);*/
         }
         
         ctx.lineTo(canvasWidth, horizonLine + (-1 * mountainMaxHeight * audioData[audioData.length-1]/255));
@@ -165,18 +162,20 @@ function draw(params={}){
     }
     // Draw ground
     if(params.showGround) {
-        // TODO: Get rid of magic numbers for canvasWidth, canvasHeight, horizonLine
+        // TODO: Refactor numbers for canvasWidth, canvasHeight, horizonLine into a constant parameter
         let horizonLine = canvasHeight * 5/8;
         let nodeCount = 30;
-        let topNodeSpacing = canvasWidth/nodeCount;
-        let bottomNodeSpacing = topNodeSpacing * horizonScalar;
+        let topNodeSpacing = canvasWidth/nodeCount; // Spacing of vertical lines along the top of the horizon
+        let bottomNodeSpacing = topNodeSpacing * horizonScalar; // Spacing of vertical lines along the bottom of the horizon
         let horizontalLineCount = 10;
-        let horizontalLineSpacing = (canvasHeight - horizonLine) / horizontalLineCount;
+        
+        
         ctx.save();
         ctx.strokeStyle = "rgba(255,105,180,1.0)";
         ctx.lineWidth = 2;
+
         // Vertical lines
-        // Lines starting at the edge of the screen are ignored since it'd be drawing a line off-screen
+        // Lines starting at the edges of the screen are ignored since it'd be drawing a line off-screen
         for(let i = 1; i < nodeCount; i++) {
             ctx.beginPath();
             ctx.moveTo(topNodeSpacing * i, horizonLine);
@@ -184,64 +183,69 @@ function draw(params={}){
             ctx.closePath();
             ctx.stroke();
         }
+
         // Horizon line
         ctx.beginPath();
         ctx.moveTo(0, horizonLine);
         ctx.lineTo(canvasWidth, horizonLine);
         ctx.closePath();
         ctx.stroke();
+
         // Scrolling horizontal lines
         for(let i = 0; i < horizontalLineCount; i++) {
             ctx.beginPath();
+            // Use Math.pow(..., exponent) to bunch smaller numbers on the range of [0, 1] closer to 0.0
+            // The higher the exponent, the smaller the number will become
             ctx.moveTo(0, horizonLine + Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), horizonScalar) * (canvasHeight - horizonLine));
             ctx.lineTo(canvasWidth, horizonLine + Math.pow((i + groundFrameCount/120)/(horizontalLineCount-1), horizonScalar) * (canvasHeight - horizonLine));
             ctx.closePath();
             ctx.stroke();
         }
+        // Increment the horizontal line frame count by 1, looping the offset back around once every 120 frames
         groundFrameCount = (groundFrameCount + 1) % 120;
         ctx.restore();
     }
 
-    // 6 - bitmap manipulation
-	// TODO: right now. we are looping though every pixel of the canvas (320,000 of them!), 
-	// regardless of whether or not we are applying a pixel effect
-	// At some point, refactor this code so that we are looping though the image data only if
-	// it is necessary
-
-	// A) grab all of the pixels on the canvas and put them in the `data` array
-	// `imageData.data` is a `Uint8ClampedArray()` typed array that has 1.28 million elements!
-	// the variable `data` below is a reference to that array 
+    // Bitmap manipulation
+	// Put all pixels on the canvas into an array named data
 	let imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
     let data = imageData.data;
     let length = data.length;
-    let width = imageData.width; // not using here
-	// B) Iterate through each pixel, stepping 4 elements at a time (which is the RGBA for 1 pixel)
-    for(let i = 0; i < length; i += 4) {
-		// C) randomly change every 20th pixel +/-64 in each RGB channel
-        if(params.showNoise && Math.random() < 0.05){
-			data[i] = data[i] - 64 + Math.random() * 128; // data[i] is the red channel
-			data[i+1] = data[i+1] - 64 + Math.random() * 128; // data[i+1] is the green channel
-			data[i+2] = data[i+2] - 64 + Math.random() * 128; // data[i+2] is the blue channel
-			// data[i+3] is the alpha channel
-		} // end if
-        
+    let width = imageData.width;
+    // Offset the color of a small number of random pixels
+    if(params.showNoise) {
+        let pixelRef;
+        for(let i = 0; i < (length/4) * 0.05; i++) {
+            // Choose a random pixel on the screen
+            pixelRef = 4 * Math.floor(Math.random() * length/4);
+            // Offset the RGB channel values by +/-64 independently of each other
+            data[pixelRef] = data[pixelRef] - 64 + Math.random() * 128; // data[i] is the red channel
+            data[pixelRef+1] = data[pixelRef+1] - 64 + Math.random() * 128; // data[i+1] is the green channel
+            data[pixelRef+2] = data[pixelRef+2] - 64 + Math.random() * 128; // data[i+2] is the blue channel
+            // data[i+3] is alpha, ignore it
+        }
+    }
+
+    // Iterate through each pixel, stepping 4 elements at a time (which is the RGBA for 1 pixel)
+    if(params.showInvert){
         // Invert the color of every pixel
-        if(params.showInvert){
+        for(let i = 0; i < length; i += 4) {
             data[i] = 255-data[i];
             data[i+1] = 255-data[i+1];
             data[i+2] = 255-data[i+2];
         }
-	} // end for
+	}
     
     // Emboss effect
     if(params.showEmboss){
         for(let i = 0; i < length; i++) {
             if(i%4 == 3) continue; // skip alpha channel
+            // Make the R/G/B value a product of the difference between the pixels below and to the right of itself
             data[i] = 127 + 2*data[i] - data[i+4] - data[i + width*4];
         }
     }
     
-	// D) copy image data back to canvas
+	// Copy image data back to canvas
     ctx.putImageData(imageData, 0, 0);
 }
 
