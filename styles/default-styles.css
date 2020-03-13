@@ -1,72 +1,88 @@
+:root {
+  --std-pink: #D05B97;
+  --std-blue: #100A1D;
+  --std-white: #FFF;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+#mainWrapper {}
+
 main {
-  width: 800px;
+  width: 80vw;
   margin: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 h1 {
+  margin: 2vh 0 1.5vh 0;
   text-align: center;
+  background-color: orange;
 }
 
 body {
-	background: #eeeeee;
-	font-family: tahoma, verdana, sans serif;
+  background-color: var(--std-blue);
+  color: var(--std-white);
+  font-family: 'montserrat', tahoma, verdana, sans-serif;
 }
 
 canvas {
-	margin-left: 1rem;
-	margin-top: 1rem;
-	margin-bottom: 1rem;
-	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
-	background: #fafafa;
+  background: #fafafa;
+  margin-bottom: 1.5vh;
 }
 
-#controls{
+#controls {
   margin-left: 1rem;
 }
 
-#controls p{
+#controls p {
   margin-top: 0px;
   margin-bottom: 0px;
 }
 
-#controlSliders{
+#controlSliders {
   width: 50%;
   float: left;
 }
 
-#controlCheckboxes{
+#controlCheckboxes {
   width: 50%;
   float: left;
 }
 
-#credits{
+#credits {
   width: 100%;
   clear: left;
   margin-left: 1em;
 }
 
-#volumeLabel{
+#volumeLabel {
   margin-left: 1rem;
 }
 
-section{
+section {
   margin-bottom: 1rem;
 }
 
-#playButton{
+#playButton {
   font-size: 1.2rem;
   width: 6rem;
 }
 
-button[data-playing="yes"]:after{
+button[data-playing="yes"]:after {
   content: "Pause";
 }
 
-button[data-playing="no"]:after{
+button[data-playing="no"]:after {
   content: "Play";
 }
 
-#fsButton{
+#fsButton {
   font-size: 1.2rem;
   width: 8rem;
 }
