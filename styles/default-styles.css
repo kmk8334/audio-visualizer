@@ -1,72 +1,163 @@
-main {
-  width: 800px;
-  margin: auto;
+/* Creating all of the variables we're using later in the project */
+:root {
+    --std-pink: #D05B97;
+    --std-blue: #100A1D;
+    --std-offwhite: #FFE9FF;
+    --grad-pink-std: #F431B2;
+    --grad-blue-std: #532AC8;
+    --btn-std-gradient: linear-gradient(to right, #FFE9FF, #D594E5);
+
+    --std-white: #FFF;
 }
 
-h1 {
-  text-align: center;
+/* Importing locally hosted font */
+@font-face {
+    font-family: "Streamster";
+    src: url("../fonts/Streamster.ttf");
+}
+@font-face {
+    font-family: "Alien";
+    src: url("../fonts/SFAlienEncounters.ttf");
+} 
+@font-face {
+    font-family: "Virus";
+    src: url("../fonts/Virus_01.ttf");
+} 
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+#mainWrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    margin: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-radius: 16px;
+    padding: 8px 10px 8px 8px;
+    background-image: linear-gradient( to bottom right, var(--grad-pink-std), var(--grad-blue-std))
+}
+
+#titleCanvasWrapper h1 {
+    padding: 2vh 0 1.5vh 0;
+    text-align: center;
+    font-weight: 500;
+
+    border-radius: 16px 16px 0 0;
+    font-family: "Streamster";
+    letter-spacing: 5px;
+    
 }
 
 body {
-	background: #eeeeee;
-	font-family: tahoma, verdana, sans serif;
+    background-color: var(--std-blue);
+    color: var(--std-white);
+    font-family: 'montserrat', tahoma, verdana, sans-serif;
+}
+
+#trackButtons{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+#trackContainer{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+}
+
+#trackSelect{
+    border: none;
+    flex: 1;
+    margin-left: 16px;
+    background-image: var(--btn-std-gradient);
+    background-color: var(--std-offwhite);
+    min-width: 215px;
+}
+
+button {
+    background-image: var(--btn-std-gradient);
+    border: none;
+    padding: 8px;
+    border-radius: 4px;
+    width: 49%;
+
+    font-family: "Alien";
+    display: flex;
+    justify-content: center;
 }
 
 canvas {
-	margin-left: 1rem;
-	margin-top: 1rem;
-	margin-bottom: 1rem;
-	box-shadow: 4px 4px 8px rgba(0,0,0,0.5);
-	background: #fafafa;
+    background: #fafafa;
+    border-radius: 8px;
 }
 
-#controls{
-  margin-left: 1rem;
+#controls {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 16px;
 }
 
-#controls p{
-  margin-top: 0px;
-  margin-bottom: 0px;
+.slider{
+    display: flex;
+    width: 85%;
 }
 
-#controlSliders{
-  width: 50%;
-  float: left;
+.sliderContainer{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 4px;
 }
 
-#controlCheckboxes{
-  width: 50%;
-  float: left;
+#controls p {
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
-#credits{
-  width: 100%;
-  clear: left;
-  margin-left: 1em;
+label{
+    margin-left: 8px;
 }
 
-#volumeLabel{
-  margin-left: 1rem;
+#credits {
+    width: 100%;
+    text-align: center;
+    border-radius: 0 0 16px 16px;
+    padding: 1vh 0;
+    letter-spacing: 3px;
 }
 
-section{
-  margin-bottom: 1rem;
+#credits h2{
+    font-family: "Streamster";
+
 }
 
-#playButton{
-  font-size: 1.2rem;
-  width: 6rem;
+section {
+    margin-bottom: 1rem;
 }
 
-button[data-playing="yes"]:after{
-  content: "Pause";
+#playButton {
+    font-size: 1.2rem;
 }
 
-button[data-playing="no"]:after{
-  content: "Play";
+button[data-playing="yes"]:after {
+    content: "Pause";
 }
 
-#fsButton{
-  font-size: 1.2rem;
-  width: 8rem;
+button[data-playing="no"]:after {
+    content: "Play";
+}
+
+#fsButton {
+    font-size: 1.2rem;
 }
