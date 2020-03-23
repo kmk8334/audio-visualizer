@@ -3,10 +3,18 @@
     --std-pink: #D05B97;
     --std-blue: #100A1D;
     --std-offwhite: #FFE9FF;
+
+
     --grad-pink-std: #F431B2;
     --grad-blue-std: #532AC8;
-    --btn-std-gradient: linear-gradient(to right, #FFE9FF, #D594E5);
 
+    --btn-std-gradient: linear-gradient(to right, #ffe9ff, #D594E5);
+    --btn-hover-gradient: linear-gradient(to right, rgb(241, 204, 241), rgb(171, 85, 192));
+    --btn-active-gradient: linear-gradient(to right, rgb(197, 125, 197), rgb(153, 59, 177));
+
+    --link-hover: rgb(245, 184, 245);
+    --link-active: rgb(228, 130, 228);
+    --link-visited: rgb(212, 174, 255);
     --std-white: #FFF;
 }
 
@@ -83,6 +91,10 @@ body {
     min-width: 215px;
 }
 
+#trackSelect:hover{
+    cursor: pointer;
+}
+
 button {
     background-image: var(--btn-std-gradient);
     border: none;
@@ -93,6 +105,16 @@ button {
     font-family: "Alien";
     display: flex;
     justify-content: center;
+}
+
+button:hover {
+    background-image: var(--btn-hover-gradient);
+    cursor: pointer;
+}
+
+button:active {
+    background-image: var(--btn-active-gradient);
+    cursor: pointer;
 }
 
 canvas {
@@ -135,6 +157,23 @@ label{
     border-radius: 0 0 16px 16px;
     padding: 1vh 0;
     letter-spacing: 3px;
+    color: var(--std-offwhite);
+}
+
+p a{
+    color: var(--std-offwhite);
+}
+
+p a:hover{
+    color: var(--link-hover);
+}
+
+p a:active{
+    color: var(--link-active);
+}
+
+p a:visited{
+    color: var(--link-visited);
 }
 
 #credits h2{
