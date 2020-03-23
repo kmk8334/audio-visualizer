@@ -125,7 +125,7 @@ canvas {
 #controls {
     display: inline-flex;
     flex-direction: column;
-    margin: 9% 0 0 16px;
+    margin: 11% 0 0 16px;
 }
 
 .slider{
