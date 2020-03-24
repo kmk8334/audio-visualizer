@@ -16,87 +16,96 @@
 <body>
   <div id="mainWrapper">
     <main>
-      <div id='titleCanvasWrapper'>
+      <!-- Header -->
+      <div id="titleWrapper" class="row">
         <h1>Vaporwave Visualizer</h1>
-        <canvas width="800" height="600"></canvas>
-        <div id="credits">
-          <h2>Credits</h2>
-          <p><a href="https://freemusicarchive.org/music/Meavy_Boy/EP_71_to_20/Unrequited_Attention">Meavy Boy
-              - Unrequited Attention</a></p>
-          <p><a href="https://professorkliq.bandcamp.com/track/mouth-money">Professor Kliq - Mouth Money</a>
-          </p>
-          <p><a href="https://freemusicarchive.org/music/Suburban_Temples/Water_Features/03_Airgap">Water
-              Features - Airgap</a></p>
-        </div>
       </div>
-      <aside id="controls">
-        <section id="trackControls">
-          <div id="trackButtons">
-            <button id="playButton" data-playing="no"></button>
-            <button id="fsButton">Full Screen</button>
+      <!-- Canvas/controls, wrap controls as column flexbox for mobile -->
+      <div id="canvasAndControls" class="row">
+        <!-- Canvas -->
+        <canvas width="800" height="600"></canvas>
+        <!-- Controls -->
+        <aside id="controls">
+          <section id="trackControls">
+            <div id="trackButtons">
+              <button id="playButton" data-playing="no"></button>
+              <button id="fsButton">Full Screen</button>
+            </div>
+            <div id="trackContainer">
+              <p>Track:</p>
+              <select id="trackSelect">
+                <option value="media/unrequited-attention.mp3" selected>Meavy Boy - Unrequited Attention
+                </option>
+                <option value="media/mouth-money.mp3">Professor Kliq - Mouth Money</option>
+                <option value="media/airgap.mp3">Water Features - Airgap</option>
+              </select>
+            </div>
+          </section>
+          <div id="controlCheckboxes">
+            <section class="controlGroup">
+              <p><input type="checkbox" id="sunCB" checked><label for="sunCB">Show Sun</label></p>
+              <p><input type="checkbox" id="mountainsCB" checked><label for="mountainsCB">Show
+                  Mountains</label></p>
+              <p><input type="checkbox" id="groundCB" checked><label for="groundCB">Show Ground</label>
+              </p>
+            </section>
+            <section class="controlGroup">
+              <p><input type="checkbox" id="noiseCB"><label for="noiseCB">Show Noise</label></p>
+              <p><input type="checkbox" id="invertCB"><label for="invertCB">Invert Color</label></p>
+              <p><input type="checkbox" id="embossCB"><label for="embossCB">Show Emboss</label></p>
+            </section>
+            <section class="controlGroup">
+              <p><input type="checkbox" id="highshelfCB"><label for="highshelfCB">Highshelf Filter
+                  (Treble)</label></p>
+              <p><input type="checkbox" id="lowshelfCB"><label for="lowshelfCB">Lowshelf Filter
+                  (Bass)</label></p>
+            </section>
           </div>
-          <div id="trackContainer">
-            <p>Track:</p>
-            <select id="trackSelect">
-              <option value="media/unrequited-attention.mp3" selected>Meavy Boy - Unrequited Attention
-              </option>
-              <option value="media/mouth-money.mp3">Professor Kliq - Mouth Money</option>
-              <option value="media/airgap.mp3">Water Features - Airgap</option>
-            </select>
-          </div>
-        </section>
-        <div id="controlCheckboxes">
-          <section class="controlGroup">
-            <p><input type="checkbox" id="sunCB" checked><label for="sunCB">Show Sun</label></p>
-            <p><input type="checkbox" id="mountainsCB" checked><label for="mountainsCB">Show
-                Mountains</label></p>
-            <p><input type="checkbox" id="groundCB" checked><label for="groundCB">Show Ground</label>
-            </p>
-          </section>
-          <section class="controlGroup">
-            <p><input type="checkbox" id="noiseCB"><label for="noiseCB">Show Noise</label></p>
-            <p><input type="checkbox" id="invertCB"><label for="invertCB">Invert Color</label></p>
-            <p><input type="checkbox" id="embossCB"><label for="embossCB">Show Emboss</label></p>
-          </section>
-          <section class="controlGroup">
-            <p><input type="checkbox" id="highshelfCB"><label for="highshelfCB">Highshelf Filter
-                (Treble)</label></p>
-            <p><input type="checkbox" id="lowshelfCB"><label for="lowshelfCB">Lowshelf Filter
-                (Bass)</label></p>
-          </section>
-        </div>
 
-        <div id="controlSliders">
-          <section id="volumeSliderSection">
-            Volume: <br>
-            <div class="sliderContainer">
-              <input type="range" class="slider" id="volumeSlider" min="0" max="2" value="0.40" step="0.01">
-              <span id="volumeLabel">???</span>
-            </div>
-          </section>
-          <section id="sunSliderSection">
-            Sun scalar: <br>
-            <div class="sliderContainer">
-              <input type="range" class="slider" id="sunSlider" min="0.5" max="2.0" value="1.0" step="0.1">
-              <span id="sunLabel">1.0</span>
-            </div>
-          </section>
-          <section id="mountainSliderSection">
-            Mountain scalar: <br>
-            <div class="sliderContainer">
-              <input type="range" class="slider" id="mountainSlider" min="0.2" max="2.0" value="1.0" step="0.1">
-              <span id="mountainLabel">1.0</span>
-            </div>
-          </section>
-          <section id="groundSliderSection">
-            Horizon scalar: <br>
-            <div class="sliderContainer">
-              <input type="range" class="slider" id="groundSlider" min="1.5" max="10.0" value="2.0" step="0.1">
-              <span id="groundLabel">2.0</span>
-            </div>
-          </section>
-        </div>
-      </aside>
+          <div id="controlSliders">
+            <section id="volumeSliderSection">
+              Volume: <br>
+              <div class="sliderContainer">
+                <input type="range" class="slider" id="volumeSlider" min="0" max="2" value="0.40" step="0.01">
+                <span id="volumeLabel">???</span>
+              </div>
+            </section>
+            <section id="sunSliderSection">
+              Sun scalar: <br>
+              <div class="sliderContainer">
+                <input type="range" class="slider" id="sunSlider" min="0.5" max="2.0" value="1.0" step="0.1">
+                <span id="sunLabel">1.0</span>
+              </div>
+            </section>
+            <section id="mountainSliderSection">
+              Mountain scalar: <br>
+              <div class="sliderContainer">
+                <input type="range" class="slider" id="mountainSlider" min="0.2" max="2.0" value="1.0" step="0.1">
+                <span id="mountainLabel">1.0</span>
+              </div>
+            </section>
+            <section id="groundSliderSection">
+              Horizon scalar: <br>
+              <div class="sliderContainer">
+                <input type="range" class="slider" id="groundSlider" min="1.5" max="10.0" value="2.0" step="0.1">
+                <span id="groundLabel">2.0</span>
+              </div>
+            </section>
+          </div>
+        </aside>
+      </div>
+      <!-- End controls -->
+      <!-- Credits -->
+      <div id="credits" class="row">
+        <h2>Credits</h2>
+        <p><a href="https://freemusicarchive.org/music/Meavy_Boy/EP_71_to_20/Unrequited_Attention">Meavy Boy
+            - Unrequited Attention</a></p>
+        <p><a href="https://professorkliq.bandcamp.com/track/mouth-money">Professor Kliq - Mouth Money</a>
+        </p>
+        <p><a href="https://freemusicarchive.org/music/Suburban_Temples/Water_Features/03_Airgap">Water
+            Features - Airgap</a></p>
+      </div>
+      <!-- End credits -->
     </main>
   </div>
 </body>
