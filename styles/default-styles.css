@@ -4,7 +4,6 @@
     --std-blue: #100A1D;
     --std-offwhite: #FFE9FF;
 
-
     --grad-pink-std: #F431B2;
     --grad-blue-std: #532AC8;
 
@@ -32,6 +31,9 @@
     src: url("../fonts/Virus_01.ttf");
 } 
 
+
+/* Start to the actual rules */
+/* Global/Near Global Rules */
 * {
     padding: 0;
     margin: 0;
@@ -53,6 +55,32 @@ main {
     background-image: linear-gradient( to bottom right, var(--grad-pink-std), var(--grad-blue-std))
 }
 
+/* ID-specific rules */
+#controls {
+    display: inline-flex;
+    flex-direction: column;
+    margin: 11% 0 0 16px;
+}
+
+#controls p {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+#credits {
+    width: 100%;
+    text-align: center;
+    border-radius: 0 0 16px 16px;
+    padding: 1vh 0;
+    letter-spacing: 3px;
+    color: var(--std-offwhite);
+}
+
+#credits h2{
+    font-family: "Streamster";
+
+}
+
 #titleCanvasWrapper h1 {
     padding: 2vh 0 1.5vh 0;
     text-align: center;
@@ -61,13 +89,6 @@ main {
     border-radius: 16px 16px 0 0;
     font-family: "Streamster";
     letter-spacing: 5px;
-    
-}
-
-body {
-    background-color: var(--std-blue);
-    color: var(--std-white);
-    font-family: 'montserrat', tahoma, verdana, sans-serif;
 }
 
 #trackButtons{
@@ -95,6 +116,34 @@ body {
     cursor: pointer;
 }
 
+#playButton {
+    font-size: 1.2rem;
+}
+#fsButton {
+    font-size: 1.2rem;
+}
+
+/* Class specific rules */
+.slider{
+    display: flex;
+    width: 85%;
+}
+
+.sliderContainer{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+/* Element specific rules */
+body {
+    background-color: var(--std-blue);
+    color: var(--std-white);
+    font-family: 'montserrat', tahoma, verdana, sans-serif;
+}
+
 button {
     background-image: var(--btn-std-gradient);
     border: none;
@@ -119,44 +168,12 @@ button:active {
 
 canvas {
     background: #fafafa;
+    background-color: var(--std-blue);
     border-radius: 8px;
-}
-
-#controls {
-    display: inline-flex;
-    flex-direction: column;
-    margin: 11% 0 0 16px;
-}
-
-.slider{
-    display: flex;
-    width: 85%;
-}
-
-.sliderContainer{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-between;
-    margin-top: 4px;
-}
-
-#controls p {
-    margin-top: 0px;
-    margin-bottom: 0px;
 }
 
 label{
     margin-left: 8px;
-}
-
-#credits {
-    width: 100%;
-    text-align: center;
-    border-radius: 0 0 16px 16px;
-    padding: 1vh 0;
-    letter-spacing: 3px;
-    color: var(--std-offwhite);
 }
 
 p a{
@@ -175,17 +192,8 @@ p a:visited{
     color: var(--link-visited);
 }
 
-#credits h2{
-    font-family: "Streamster";
-
-}
-
 section {
     margin-bottom: 1rem;
-}
-
-#playButton {
-    font-size: 1.2rem;
 }
 
 button[data-playing="yes"]:after {
@@ -194,8 +202,4 @@ button[data-playing="yes"]:after {
 
 button[data-playing="no"]:after {
     content: "Play";
-}
-
-#fsButton {
-    font-size: 1.2rem;
 }
